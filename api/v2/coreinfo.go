@@ -114,9 +114,9 @@ func (gci *GeneralCoreInfo) Key(r *http.Request) (string, error) {
 			if err != nil {
 				return "", fmt.Errorf("authorize failed, can not confirm the app by request ip")
 			}
-			return appName, nil
+			return fixPrefix(appName), nil
 		}
 		return "", fmt.Errorf("authorize failed, no permission")
 	}
-	return appName, nil
+	return fixPrefix(appName), nil
 }
