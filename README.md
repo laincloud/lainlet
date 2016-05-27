@@ -58,6 +58,7 @@ go build -o lainlet
 
 #### `/v2/configwatcher?target=<target>`
 返回`/lain/config/<target>`的值, 接收参数target, 如果不指定，则返回所有的配置值。格式为json
+target 会被作为所有配置项的前缀进行搜索，比如 `target=a` 的情况会把所有 `a` 开头的配置项都返回。
 
 #### `/v2/procwatcher`
 返回`/lain/config/pod_group/<appname>`的精简结构
@@ -73,6 +74,7 @@ go build -o lainlet
 
 #### `/v2/depends`
 返回 `/lain/deployd/depends/pods`下的数据的简化版本
+`target` 参数如果不指定，返回所有 depends 数据，如果指定，它则作为前缀匹配所有 depends，返回一部分。
 
 #### `/v2/nodes`
 返回 `/lain/nodes/nodes`下的数据的简化版本
