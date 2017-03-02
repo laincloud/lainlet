@@ -83,7 +83,9 @@ target 会被作为所有配置项的前缀进行搜索，比如 `target=a` 的�
 返回 某节点下所有container的信息列表
 
 #### `/v2/webrouter/webprocs`
-返回所有web类型的proc的信息，数据结构和coreinfo类似，但是只包含container IP, Expose和Annotation信息
+返回所有web类型的proc的信息，数据结构和coreinfo类似，但是只包含container IP, Expose和Annotation信息。
+
+> 为了保证在集群异常时，webrouter 的已有配置不被删除，在调用该接口时，如果超过一半的容器没有 IP 或者没有任何容器信息，则会返回 error。
 
 #### `/v2/rebellion/localprocs`
 返回所有本地的proc的信息，数据结构和coreinfo类似，但是只包含Annotation和InstanceNo信息
