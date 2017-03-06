@@ -61,6 +61,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	server.Register(new(v2.AppsData))
 	server.Register(new(v2.GeneralConfig))
 	server.Register(new(v2.GeneralPodGroup))
 	server.Register(new(v2.GeneralCoreInfo))
