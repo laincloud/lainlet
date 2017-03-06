@@ -3,8 +3,6 @@ package api
 import (
 	"encoding/json"
 	"github.com/go-martini/martini"
-	"github.com/mijia/sweb/log"
-	"golang.org/x/net/context"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
 	"github.com/laincloud/lainlet/watcher/config"
@@ -12,6 +10,8 @@ import (
 	"github.com/laincloud/lainlet/watcher/depends"
 	"github.com/laincloud/lainlet/watcher/nodes"
 	"github.com/laincloud/lainlet/watcher/podgroup"
+	"github.com/mijia/sweb/log"
+	"golang.org/x/net/context"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -366,7 +366,6 @@ func GetInt(r *http.Request, name string, value int) int {
 func GetString(r *http.Request, name string, value string) string {
 	if v := r.FormValue(name); v != "" {
 		return v
-		return value
 	}
 	return value
 }
