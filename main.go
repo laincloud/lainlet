@@ -11,6 +11,7 @@ import (
 	"github.com/laincloud/lainlet/auth"
 	"github.com/laincloud/lainlet/store"
 	_ "github.com/laincloud/lainlet/store/etcd"
+	_ "github.com/laincloud/lainlet/store/mocks"
 	"github.com/mijia/sweb/log"
 	"golang.org/x/net/context"
 )
@@ -21,13 +22,14 @@ const (
 )
 
 var (
-	webAddr, etcdAddr, ip string
-	debug, v, noAuth      bool
+	webAddr, storeType, storeAddr, ip string
+	debug, v, noAuth                  bool
 )
 
 func init() {
 	flag.StringVar(&webAddr, "web", "localhost:9000", "The address lainlet listen")
-	flag.StringVar(&etcdAddr, "etcd", "", "Etcd cluster entry point like http://127.0.0.1:4001")
+	flag.StringVar(&storeType, "type", "etcd", "The store type, such as etcd, zookeeper")
+	flag.StringVar(&storeAddr, "addr", "", "The store cluster addr")
 	flag.StringVar(&ip, "ip", "", "The ip of server lainlet running on")
 	flag.BoolVar(&debug, "debug", false, "Open the Debug log")
 	flag.BoolVar(&v, "v", false, "Print version")
@@ -40,7 +42,7 @@ func main() {
 		println("Lainlet:", version)
 		return
 	}
-	if webAddr == "" || etcdAddr == "" {
+	if webAddr == "" || storeAddr == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -48,7 +50,7 @@ func main() {
 		log.EnableDebug()
 	}
 
-	s, err := store.New("etcd", strings.Split(etcdAddr, ","))
+	s, err := store.New(storeType, strings.Split(storeAddr, ","))
 	if err != nil {
 		panic(err)
 	}
