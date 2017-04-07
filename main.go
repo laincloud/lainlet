@@ -70,6 +70,7 @@ func main() {
 	server.Register(new(v2.ProxyData))
 	server.Register(new(v2.Depends))
 	server.Register(new(v2.WebrouterInfo))
+	server.Register(new(v2.StreamRouterInfo))
 	server.Register(new(v2.RebellionAPIProvider))
 	server.Register(new(v2.CoreInfoForBackupctl))
 	server.Register(&v2.LocalSpec{
