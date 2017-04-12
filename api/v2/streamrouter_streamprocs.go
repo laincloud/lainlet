@@ -9,6 +9,7 @@ import (
 	"github.com/laincloud/lainlet/watcher/podgroup"
 	"net/http"
 	"reflect"
+	"sort"
 )
 
 type StreamProc struct {
@@ -104,6 +105,13 @@ func (si *StreamRouterInfo) Make(data map[string]interface{}) (api.API, bool, er
 			}
 		}
 		ret.Data[pg.Spec.Namespace] = append(ret.Data[pg.Spec.Namespace], proc)
+	}
+	for _, v := range ret.Data {
+		sort.Slice(v, func(i int, j int) bool { return v[i].Name < v[j].Name })
+		for _, proc := range v {
+			sort.Slice(proc.Upstreams, func(i int, j int) bool { return proc.Upstreams[i].InstanceNo < proc.Upstreams[j].InstanceNo })
+			sort.Slice(proc.Services, func(i int, j int) bool { return proc.Services[i].ListenPort < proc.Services[j].ListenPort })
+		}
 	}
 	if containerCount == 0 || aliveCount*2 < containerCount {
 		return ret, false, tooManyDeadContainersError

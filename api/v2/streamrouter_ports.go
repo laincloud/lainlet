@@ -9,6 +9,7 @@ import (
 	"github.com/laincloud/lainlet/watcher/podgroup"
 	"net/http"
 	"reflect"
+	"sort"
 )
 
 type Ports struct {
@@ -43,10 +44,11 @@ func (si *Ports) Make(data map[string]interface{}) (api.API, bool, error) {
 		if len(annotation.Ports) == 0 {
 			continue
 		}
-		for _,port := range annotation.Ports {
+		for _, port := range annotation.Ports {
 			ret.Data = append(ret.Data, port.Srcport)
 		}
 	}
+	sort.Slice(ret.Data, func(i int, j int) bool { return ret.Data[i] < ret.Data[j] })
 	return ret, !reflect.DeepEqual(si.Data, ret.Data), nil
 }
 
