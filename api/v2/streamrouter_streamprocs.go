@@ -42,12 +42,6 @@ type Port struct {
 	Srcport     int         `json:"srcport"`
 	Dstport     int         `json:"dstport"`
 	Proto       string      `json:"proto"`
-	Healthcheck HealthCheck `json:"healthcheck"`
-}
-
-type HealthCheck struct {
-	Send   string `json:"send"`
-	Expect string `json:"expect"`
 }
 
 func (si *StreamRouterInfo) Decode(r []byte) error {
@@ -89,8 +83,6 @@ func (si *StreamRouterInfo) Make(data map[string]interface{}) (api.API, bool, er
 			proc.Services[i] = StreamService{
 				UpstreamPort: port.Dstport,
 				ListenPort:   port.Srcport,
-				Send:         port.Healthcheck.Send,
-				Expect:       port.Healthcheck.Expect,
 			}
 		}
 
