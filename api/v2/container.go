@@ -36,6 +36,9 @@ func (gc *GeneralContainers) Make(data map[string]interface{}) (api.API, bool, e
 		Data: make(map[string]container.Info),
 	}
 	for k, v := range data {
+		if nil == v {
+			continue
+		}
 		ret.Data[k] = v.(container.Info)
 	}
 	return ret, true, nil
