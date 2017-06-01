@@ -1,0 +1,36 @@
+hash: edd1c89e5f85b2519de2c8c2a66ea51555dbf505908cb3aa118239fc171d1e72
+updated: 2017-06-01T10:48:41.885143+08:00
+imports:
+- name: github.com/codegangsta/inject
+  version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
+- name: github.com/coreos/etcd
+  version: d267ca9c184e953554257d0acdd1dc9c47d38229
+  subpackages:
+  - client
+  - pkg/pathutil
+  - pkg/types
+- name: github.com/go-martini/martini
+  version: 22fa46961aabd2665cf3f1343b146d20028f5071
+- name: github.com/laincloud/deployd
+  version: a161c33d0da4ba1bc6648b9f19dc8d2ca4e1b312
+  subpackages:
+  - cluster
+  - engine
+  - storage
+- name: github.com/mijia/adoc
+  version: b13894c1c54204ed818a345d2a5d7fc30f0c7239
+- name: github.com/mijia/go-generics
+  version: 2278a5f0de143e1d17ea16d56e7f85391bdb85a3
+- name: github.com/mijia/sweb
+  version: 4919e73674ef98e133d7f5e1d87c3963653c12b1
+  subpackages:
+  - log
+- name: github.com/ugorji/go
+  version: ded73eae5db7e7a0ef6f55aace87a2873c5d2b74
+  subpackages:
+  - codec
+- name: golang.org/x/net
+  version: f2499483f923065a842d38eb4c7f1927e6fc6e6d
+  subpackages:
+  - context
+testImports: []
