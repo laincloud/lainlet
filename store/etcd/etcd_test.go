@@ -2,8 +2,8 @@ package etcd
 
 import (
 	"fmt"
-	"golang.org/x/net/context"
 	"github.com/laincloud/lainlet/store"
+	"golang.org/x/net/context"
 	"os"
 	"strings"
 	"testing"
@@ -60,7 +60,8 @@ func TestGetTree(t *testing.T) {
 }
 
 func TestWatch(t *testing.T) {
-	ch, err := testStore.Watch("/test", context.Background(), true)
+	ctx, cancel := context.WithCancel(context.Background())
+	ch, err := testStore.Watch("/test", ctx, true, 0)
 	if err != nil {
 		t.Error(err)
 	}
@@ -70,14 +71,15 @@ func TestWatch(t *testing.T) {
 			testStore.Put("/test/dir/hello", []byte(fmt.Sprintf("test-%d", i)))
 		}
 		testStore.Delete("/test/dir/hello", false)
+		cancel()
 	}()
 	for item := range ch {
-		t.Log(item.Action.String(), item.Data[0].Key, string(item.Data[0].Value))
+		t.Log(item.Action.String(), item.Data[0].Key, string(item.Data[0].Value), item.Data[0].LastIndex)
 	}
 }
 
 func TestWatchTree(t *testing.T) {
-	ch, err := testStore.WatchTree("/test", context.Background())
+	ch, err := testStore.WatchTree("/test", context.Background(), 0)
 	if err != nil {
 		t.Error(err)
 	}
