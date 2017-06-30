@@ -1,18 +1,20 @@
-sudo: required
 language: go
-services:
-- docker
 go:
-- 1.8.1
+- 1.8.x
 install:
 - go get github.com/Masterminds/glide
-before_script: 
+before_script:
+- glide install
 script:
-- "./build.sh"
+- go build -o bin/lainlet main.go
+after_success:
+- xz -9k bin/lainlet
 deploy:
   provider: releases
   api_key:
     secure: FF13HiONKVJLMN9fQIE1dqzl7UlzBwmREmV4lRq+3CXy4ktEWVHwxQUF1HJpnBfT1gJdrtQmkDO0f8UoclxI5ISW50H91FqSeRJ/69piuKeTbXxYb6RcCSM4gdPEsXOG5/DR7bF7sn24gLogQ51ZuyZd7gO6iQ1swLCvV+6VD7Q5ctRFW0Q73BgCd9EXljAFlcRP7xvR4fRapJ9et3TIMgtp8MPKoNuiTiSiisCHjeE7EhV5cv4keVHOBQ77pA1YRc6yb9bo2UnmX0PssRwATFbMgqDI3Ww4Gwuf9en1qF46L/hV7+ZlNiWerku59SA1UVDqC9SbcUNSscXTE3tnO7wOsbDxz2Ke1+SAGR/XC0l9DqruO4bUKdS9/r+KEPFkMBfXUGKpnBJhcYteiWQdQ/Sz47HdSWot+B7e1DI59f2Sv7EoDD+/hrbt7l7Ah5O9UQYOMfveynkDeBhOzXcNg8w401Ir4V2ChfiL588Rnd3r8WxTIiDtkgzf8E0MD9D1RfHzBhruShD7msJtaN9ky4QMAyWxG4/WZWYlsh0IrhlNNeNgFheF/Jjo/b6S2tKcJCSIsg+Ak0C2aO5Qufk1G0qKtQp60xcmcJFB8rvOOBBBZC+8ggAtUhq9VBcgUPOtpujoDBU1/RulINrWPAJDFEngugL8zmLnoFuqmxkDYCQ=
-  file: bin/lainlet
+  file:
+  - bin/lainlet
+  - bin/lainlet.xz
   on:
     tags: true
