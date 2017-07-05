@@ -8,6 +8,7 @@ import (
 	"github.com/laincloud/deployd/engine"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
+	"strings"
 )
 
 const (
@@ -29,6 +30,7 @@ type PodGroup engine.PodGroupWithSpec
 // Info represents the container info, the data type returned by this container watcher
 type Info struct {
 	AppName    string `json:"app"`
+	AppVersion string `json:"app_version"`
 	ProcName   string `json:"proc"`
 	NodeName   string `json:"nodename"`
 	NodeIP     string `json:"nodeip"`
@@ -75,13 +77,23 @@ func convert(pairs []*store.KVPair) (map[string]interface{}, error) {
 			ret[k] = nil            // set to nil, let watcher delete it in cache
 			delete(invertsTable, k) // delete it in invert table
 		}
-
+		var appVersion string
+		if len(pg.Spec.Pod.Containers) > 0 {
+			for _, envStr := range pg.Spec.Pod.Containers[0].Env {
+				envParts := strings.Split(envStr, "=")
+				if len(envParts) == 2 && envParts[0] == "LAIN_APP_RELEASE_VERSION" {
+					appVersion = envParts[1]
+					break
+				}
+			}
+		}
 		for _, pod := range pg.Pods {
 			for _, container := range pod.Containers {
 				k1 := fmt.Sprintf("%s/%s", container.NodeName, container.Id)
 				k2 := fmt.Sprintf("%s/%s", container.NodeIp, container.Id)
 				ci := Info{
 					AppName:    pg.Spec.Namespace,
+					AppVersion: appVersion,
 					ProcName:   pg.Spec.Name,
 					NodeName:   container.NodeName,
 					NodeIP:     container.NodeIp,
