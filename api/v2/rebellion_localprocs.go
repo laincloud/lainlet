@@ -11,12 +11,14 @@ import (
 	"github.com/laincloud/lainlet/auth"
 	"github.com/laincloud/lainlet/watcher"
 	"github.com/laincloud/lainlet/watcher/podgroup"
+	"strings"
 )
 
 var hostName, _ = os.Hostname()
 
 type PodInfoForRebellion struct {
 	Annotation string
+	AppVersion string
 	InstanceNo int
 }
 
@@ -56,6 +58,18 @@ func (ap *RebellionAPIProvider) Make(data map[string]interface{}) (api.API, bool
 		ci := CoreInfoForRebellion{
 			PodInfos: make([]PodInfoForRebellion, 0, len(pg.Pods)),
 		}
+
+		var appVersion string
+		if len(pg.Spec.Pod.Containers) > 0 {
+			for _, envStr := range pg.Spec.Pod.Containers[0].Env {
+				envParts := strings.Split(envStr, "=")
+				if len(envParts) == 2 && envParts[0] == "LAIN_APP_RELEASE_VERSION" {
+					appVersion = envParts[1]
+					break
+				}
+			}
+		}
+
 		for _, pod := range pg.Pods {
 			isLocalContainer := false
 			for _, container := range pod.Containers {
@@ -70,6 +84,7 @@ func (ap *RebellionAPIProvider) Make(data map[string]interface{}) (api.API, bool
 					PodInfoForRebellion{
 						Annotation: pg.Spec.Pod.Annotation,
 						InstanceNo: pod.InstanceNo,
+						AppVersion: appVersion,
 					})
 			}
 		}
