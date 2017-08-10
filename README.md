@@ -1,5 +1,9 @@
 # Lainlet
 
+[![MIT license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/laincloud/lainlet.svg?branch=master)](https://travis-ci.org/laincloud/lainlet)
+[![codecov](https://codecov.io/gh/laincloud/lainlet/branch/master/graph/badge.svg)](https://codecov.io/gh/laincloud/lainlet)
+
 ## 介绍
 
 Lainlet主要负责为Lain集群中各组件和app提供实时的集群状态数据。集群的实时状态由deployd组件更新到etcd中，由于这状态数据结构复杂，不利于其他组件直接读取；而且过多的组件watch etcd会对etcd造成一定的压力。
