@@ -8,8 +8,10 @@ before_script:
 - glide install
 script:
 - go build -o bin/lainlet main.go
+- ./go.test.sh
 after_success:
 - xz -9k bin/lainlet
+- bash <(curl -s https://codecov.io/bash)
 deploy:
   provider: releases
   api_key:
