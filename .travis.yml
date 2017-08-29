@@ -4,6 +4,7 @@ go:
 - 1.8.x
 install:
 - go get github.com/Masterminds/glide
+- go get github.com/aliyun/ossutil
 before_script:
 - glide install
 script:
@@ -12,6 +13,9 @@ script:
 after_success:
 - xz -9k bin/lainlet
 - bash <(curl -s https://codecov.io/bash)
+- if [ "$TRAVIS_TAG" != "" ]; then
+  ossutil cp bin/lainlet.xz oss://lain/binary/lainlet/releases/download/${TRAVIS_TAG}/lainlet.xz -e ${ALIYUN_OSS_ENDPOINT} -i ${ALIYUN_OSS_ACCESS_KEY_ID} -k ${ALIYUN_OSS_ACCESS_KEY_SECRET};
+  fi
 deploy:
   provider: releases
   api_key:
