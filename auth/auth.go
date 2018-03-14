@@ -3,14 +3,15 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"path"
+	"strings"
+
 	"github.com/laincloud/deployd/engine"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
 	"github.com/laincloud/lainlet/watcher/depends"
 	"github.com/mijia/sweb/log"
 	"golang.org/x/net/context"
-	"path"
-	"strings"
 )
 
 const (
@@ -25,9 +26,9 @@ var (
 	authTable           map[string]containerInfo
 	dependsInvertTable  map[string]string
 	podgroupInvertTable map[string]string
-	dependsWatcher      *watcher.Watcher
-	podgroupWatcher     *watcher.Watcher
-	superAppsWatcher    *watcher.Watcher
+	dependsWatcher      watcher.Watcher
+	podgroupWatcher     watcher.Watcher
+	superAppsWatcher    watcher.Watcher
 )
 
 // Init function initialize the data needed by auth.

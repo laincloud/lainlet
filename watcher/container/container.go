@@ -3,26 +3,19 @@ package container
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mijia/sweb/log"
-	"golang.org/x/net/context"
+	"strings"
+
 	"github.com/laincloud/deployd/engine"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
-	"strings"
+	"github.com/mijia/sweb/log"
+	"golang.org/x/net/context"
 )
 
 const (
 	// KEY represents the key path in store
 	KEY = "/lain/deployd/pod_groups"
 )
-
-var (
-	invertsTable map[string]string
-)
-
-func init() {
-	invertsTable = make(map[string]string)
-}
 
 // PodGroup is actually from the deployd engine, it actually engine.PodGroupWithSpec
 type PodGroup engine.PodGroupWithSpec
@@ -39,20 +32,34 @@ type Info struct {
 	InstanceNo int    `json:"instanceNo"`
 }
 
-// New create a new watcher which used to watch container info
-func New(s store.Store, ctx context.Context) (*watcher.Watcher, error) {
-	return watcher.New(s, ctx, KEY, convert, invertKey)
+type ContainerWatcher struct {
+	watcher.BaseWatcher
+	invertsTable map[string]string
 }
 
-func invertKey(key string) string {
-	s, ok := invertsTable[key]
+// New create a new watcher which used to watch container info
+func New(s store.Store, ctx context.Context) (watcher.Watcher, error) {
+	ret := &ContainerWatcher{
+		invertsTable:make(map[string]string),
+	}
+	base, err := watcher.New(s, ctx, KEY, ret.convert, ret.invertKey)
+	if err != nil {
+		return nil, err
+	}
+	ret.BaseWatcher = *base
+	return ret, nil
+}
+
+func (wch *ContainerWatcher) invertKey(key string) string {
+	s, ok := wch.invertsTable[key]
 	if ok {
 		return s
 	}
 	return ""
 }
 
-func convert(pairs []*store.KVPair) (map[string]interface{}, error) {
+func (wch *ContainerWatcher) convert(pairs []*store.KVPair) (map[string]interface{}, error) {
+	invertsTable := wch.invertsTable
 	ret := make(map[string]interface{})
 	for _, kv := range pairs {
 		var pg PodGroup

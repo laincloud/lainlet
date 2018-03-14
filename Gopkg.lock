@@ -18,6 +18,12 @@
   version = "v3.1.8"
 
 [[projects]]
+  name = "github.com/coreos/go-semver"
+  packages = ["semver"]
+  revision = "8ab6407b697782a06568d4b7f1db25550ec2e4c6"
+  version = "v0.2.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/go-martini/martini"
   packages = ["."]
@@ -139,6 +145,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "50223ff146cc9000e700eecf5a3ced2f6eba71cd9657b723b05167bc005e091e"
+  inputs-digest = "5fd17d05bcd5562dc3abdf7fa831547d2090a8d464f1cf5853769cd2ad9f5e01"
   solver-name = "gps-cdcl"
   solver-version = 1

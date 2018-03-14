@@ -2,22 +2,18 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/go-martini/martini"
-	"github.com/laincloud/lainlet/store"
-	"github.com/laincloud/lainlet/watcher"
-	"github.com/laincloud/lainlet/watcher/config"
-	"github.com/laincloud/lainlet/watcher/container"
-	"github.com/laincloud/lainlet/watcher/depends"
-	"github.com/laincloud/lainlet/watcher/nodes"
-	"github.com/laincloud/lainlet/watcher/podgroup"
-	"github.com/mijia/sweb/log"
-	"golang.org/x/net/context"
 	"net/http"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"github.com/go-martini/martini"
+	"github.com/laincloud/lainlet/store"
+	"github.com/laincloud/lainlet/watcher"
+	"github.com/mijia/sweb/log"
+	"golang.org/x/net/context"
 )
 
 var (
@@ -38,33 +34,17 @@ type Server struct {
 // version is the lainlet version, used to return by `/version` api;
 // st is the backend store, it must be valided, should not be a empty interface or a nil value.
 // This function return error when fail to initialize some backend watcher.
-func New(ip, version string, st store.Store) (*Server, error) {
+func New(ip, version string, watchers map[string]watcher.Watcher) (*Server, error) {
 	r := martini.NewRouter()
 	s := martini.New()
 
-	background := context.Background()
-	ctx := context.WithValue(background, "ip", ip)
+	configWatcher := watchers["configwatcher"]
+	dependsWatcher := watchers["dependswatcher"]
+	containerWatcher := watchers["containerwatcher"]
+	podgroupWatcher := watchers["podgroupwatcher"]
+	nodesWatcher := watchers["nodeswatcher"]
 
-	configWatcher, err := config.New(st, background)
-	if err != nil {
-		return nil, err
-	}
-	containerWatcher, err := container.New(st, background)
-	if err != nil {
-		return nil, err
-	}
-	podgroupWatcher, err := podgroup.New(st, background)
-	if err != nil {
-		return nil, err
-	}
-	dependsWatcher, err := depends.New(st, background)
-	if err != nil {
-		return nil, err
-	}
-	nodesWatcher, err := nodes.New(st, background)
-	if err != nil {
-		return nil, err
-	}
+	ctx := context.WithValue(context.Background(), "ip", ip)
 
 	ctx = context.WithValue(ctx, "configwatcher", configWatcher)
 	ctx = context.WithValue(ctx, "dependswatcher", dependsWatcher)
@@ -150,19 +130,19 @@ func handleWatch(api API, w http.ResponseWriter, r *http.Request, es *EventSourc
 
 	var (
 		channel <-chan *watcher.Event
-		wer     *watcher.Watcher
+		wer     watcher.Watcher
 	)
 	switch api.WatcherName() {
 	case watcher.CONFIG:
-		wer = ctx.Value("configwatcher").(*watcher.Watcher)
+		wer = ctx.Value("configwatcher").(watcher.Watcher)
 	case watcher.CONTAINER:
-		wer = ctx.Value("containerwatcher").(*watcher.Watcher)
+		wer = ctx.Value("containerwatcher").(watcher.Watcher)
 	case watcher.PODGROUP:
-		wer = ctx.Value("podgroupwatcher").(*watcher.Watcher)
+		wer = ctx.Value("podgroupwatcher").(watcher.Watcher)
 	case watcher.DEPENDS:
-		wer = ctx.Value("dependswatcher").(*watcher.Watcher)
+		wer = ctx.Value("dependswatcher").(watcher.Watcher)
 	case watcher.NODES:
-		wer = ctx.Value("nodeswatcher").(*watcher.Watcher)
+		wer = ctx.Value("nodeswatcher").(watcher.Watcher)
 	default:
 		es.SendEvent(0, store.ERROR.String(), "500 unkown watcher")
 		return
@@ -233,7 +213,7 @@ func handleWatch(api API, w http.ResponseWriter, r *http.Request, es *EventSourc
 
 func handleGet(api API, w http.ResponseWriter, r *http.Request, ctx context.Context) {
 	var (
-		wer *watcher.Watcher
+		wer watcher.Watcher
 	)
 
 	key, err := api.Key(r)
@@ -244,15 +224,15 @@ func handleGet(api API, w http.ResponseWriter, r *http.Request, ctx context.Cont
 
 	switch api.WatcherName() {
 	case watcher.CONFIG:
-		wer = ctx.Value("configwatcher").(*watcher.Watcher)
+		wer = ctx.Value("configwatcher").(watcher.Watcher)
 	case watcher.CONTAINER:
-		wer = ctx.Value("containerwatcher").(*watcher.Watcher)
+		wer = ctx.Value("containerwatcher").(watcher.Watcher)
 	case watcher.PODGROUP:
-		wer = ctx.Value("podgroupwatcher").(*watcher.Watcher)
+		wer = ctx.Value("podgroupwatcher").(watcher.Watcher)
 	case watcher.DEPENDS:
-		wer = ctx.Value("dependswatcher").(*watcher.Watcher)
+		wer = ctx.Value("dependswatcher").(watcher.Watcher)
 	case watcher.NODES:
-		wer = ctx.Value("nodeswatcher").(*watcher.Watcher)
+		wer = ctx.Value("nodeswatcher").(watcher.Watcher)
 	default:
 		Return(w, 500, "Unkown watcher "+api.WatcherName())
 		return
