@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"runtime"
 	"strings"
 
 	"os/signal"
@@ -84,7 +85,9 @@ func initWatchers(st store.Store) (map[string]watcher.Watcher, error) {
 
 func main() {
 	if v {
-		println("Lainlet:", version.Version)
+		println("Lainlet Version:", version.Version)
+		fmt.Printf("Git SHA: %s\n", version.GitSHA)
+		fmt.Printf("Go Version: %s\n", runtime.Version())
 		return
 	}
 	if webAddr == "" && grpcAddr == "" {
