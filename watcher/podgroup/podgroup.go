@@ -20,7 +20,7 @@ const (
 type PodGroup engine.PodGroupWithSpec
 
 // New create a new watcher which used to watch podgroup data
-func New(s store.Store, ctx context.Context) (*watcher.Watcher, error) {
+func New(s store.Store, ctx context.Context) (watcher.Watcher, error) {
 	return watcher.New(s, ctx, KEY, convert, invertKey)
 }
 

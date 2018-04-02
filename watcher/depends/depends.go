@@ -3,12 +3,13 @@ package depends
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mijia/sweb/log"
-	"golang.org/x/net/context"
+	"path"
+
 	"github.com/laincloud/deployd/engine"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
-	"path"
+	"github.com/mijia/sweb/log"
+	"golang.org/x/net/context"
 )
 
 const (
@@ -20,7 +21,7 @@ const (
 type Depends map[string]map[string]engine.SharedPodWithSpec
 
 // New create a new watcher which used to watch depends data
-func New(s store.Store, ctx context.Context) (*watcher.Watcher, error) {
+func New(s store.Store, ctx context.Context) (watcher.Watcher, error) {
 	return watcher.New(s, ctx, KEY, convert, invertKey)
 }
 

@@ -2,11 +2,12 @@ package watcher
 
 import (
 	"fmt"
-	"github.com/mijia/sweb/log"
-	"golang.org/x/net/context"
-	"github.com/laincloud/lainlet/store"
 	"strings"
 	"time"
+
+	"github.com/laincloud/lainlet/store"
+	"github.com/mijia/sweb/log"
+	"golang.org/x/net/context"
 )
 
 const (
@@ -34,9 +35,15 @@ type Event struct {
 	Data map[string]interface{}
 }
 
-// Watcher having a sender, store, and convert function.
+type Watcher interface {
+	Get(prefix string) (map[string]interface{}, error)
+	Watch(prefix string, ctx context.Context) (<-chan *Event, error)
+	Status() Status
+}
+
+// BaseWatcher having a sender, store, and convert function.
 // It read and watch data from store, and use convert() to convert, then use sender to cache data and broadcast the event.
-type Watcher struct {
+type BaseWatcher struct {
 	key       string
 	convert   ConvertFunc
 	status    Status
@@ -58,8 +65,8 @@ type Status struct {
 type ConvertFunc func([]*store.KVPair) (map[string]interface{}, error)
 
 // New create a new watcher
-func New(s store.Store, ctx context.Context, key string, convert ConvertFunc, ckey2skey func(string) string) (*Watcher, error) {
-	watcher := &Watcher{
+func New(s store.Store, ctx context.Context, key string, convert ConvertFunc, ckey2skey func(string) string) (*BaseWatcher, error) {
+	watcher := &BaseWatcher{
 		key:       key,
 		convert:   convert,
 		ckey2skey: ckey2skey,
@@ -71,7 +78,7 @@ func New(s store.Store, ctx context.Context, key string, convert ConvertFunc, ck
 	return watcher, nil
 }
 
-func (w *Watcher) refresh() error {
+func (w *BaseWatcher) refresh() error {
 	pairs, err := w.Store.GetTree(w.key)
 	if err != nil {
 		if err != store.ErrKeyNotFound {
@@ -89,7 +96,7 @@ func (w *Watcher) refresh() error {
 }
 
 // a general watch function
-func (w *Watcher) watchStore(key string) {
+func (w *BaseWatcher) watchStore(key string) {
 	keys := make([]string, 0, 10)
 	var (
 		lastIndex             uint64
@@ -103,11 +110,7 @@ func (w *Watcher) watchStore(key string) {
 			continue
 		}
 		if broadcastAfterRefresh {
-			data := w.GetAll()
-			keys := make([]string, 0, len(data))
-			for k := range data {
-				keys = append(keys, k)
-			}
+			keys := w.GetAllKeys()
 			w.Broadcast(keys, store.SET)
 			broadcastAfterRefresh = false
 		}
@@ -121,7 +124,7 @@ func (w *Watcher) watchStore(key string) {
 		for {
 			select {
 			case <-w.Ctx.Done():
-				log.Infof("Watcher for %s was canceled", key)
+				log.Infof("BaseWatcher for %s was canceled", key)
 				return
 			case event, ok := <-eventCh:
 				if !ok {
@@ -129,7 +132,7 @@ func (w *Watcher) watchStore(key string) {
 					broadcastAfterRefresh = true
 					goto START
 				}
-				log.Debugf("Watcher get a store event, %s %s", event.Action, event.Key)
+				log.Debugf("BaseWatcher get a store event, %s %s", event.Action, event.Key)
 
 				// update watcher status
 				w.status.LastEvent = *event
@@ -149,7 +152,8 @@ func (w *Watcher) watchStore(key string) {
 					}
 					lastIndex = event.ModifiedIndex
 				case store.DELETE:
-					for k := range w.GetAll() { // check all the cache data whether affected by this Key
+					allKeys := w.GetAllKeys()
+					for _, k := range allKeys { // check all the cache data whether affected by this Key
 						if strings.HasPrefix(w.ckey2skey(k), event.Key) {
 							w.Delete(k, true)
 							keys = append(keys, k)
@@ -159,7 +163,7 @@ func (w *Watcher) watchStore(key string) {
 				default:
 					continue
 				}
-				log.Debugf("Watcher broadcast data by keys %v", keys)
+				log.Debugf("BaseWatcher broadcast data by keys %v", keys)
 				w.Broadcast(keys, event.Action)
 				keys = keys[:0]
 			}
@@ -172,7 +176,7 @@ func (w *Watcher) watchStore(key string) {
 // Watch function watch the keys having `prefix` prefix, it watch all the keys when prefix is '*'.
 // it return a event channel. error wil be returned only when key is empty.
 // the return channel have the newest data with init action in it.
-func (w *Watcher) Watch(prefix string, ctx context.Context) (<-chan *Event, error) {
+func (w *BaseWatcher) Watch(prefix string, ctx context.Context) (<-chan *Event, error) {
 	switch prefix {
 	case "":
 		return nil, fmt.Errorf("empty key")
@@ -185,7 +189,7 @@ func (w *Watcher) Watch(prefix string, ctx context.Context) (<-chan *Event, erro
 
 // Get function get the newest data for keys having `prefix` prefix. it returned error only when key is empty.
 // it return all the data when prefix is '*'
-func (w *Watcher) Get(prefix string) (map[string]interface{}, error) {
+func (w *BaseWatcher) Get(prefix string) (map[string]interface{}, error) {
 	switch prefix {
 	case "":
 		return nil, fmt.Errorf("empty key")
@@ -197,8 +201,8 @@ func (w *Watcher) Get(prefix string) (map[string]interface{}, error) {
 }
 
 // Status return the watcher stats
-func (w *Watcher) Status() Status {
+func (w *BaseWatcher) Status() Status {
 	w.status.NumReceivers = len(w.receivers)
-	w.status.TotalKeys = len(w.Sender.GetAll())
+	w.status.TotalKeys = w.Sender.Count()
 	return w.status
 }

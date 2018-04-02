@@ -1,10 +1,11 @@
 package config
 
 import (
-	"golang.org/x/net/context"
+	"path"
+
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
-	"path"
+	"golang.org/x/net/context"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 )
 
 // New create a new watcher which watch KEY in backend store
-func New(s store.Store, ctx context.Context) (*watcher.Watcher, error) {
+func New(s store.Store, ctx context.Context) (watcher.Watcher, error) {
 	return watcher.New(s, ctx, KEY, convert, invertKey)
 }
 

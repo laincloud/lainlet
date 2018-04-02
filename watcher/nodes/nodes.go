@@ -2,11 +2,12 @@ package nodes
 
 import (
 	"encoding/json"
-	"github.com/mijia/sweb/log"
-	"golang.org/x/net/context"
+	"path"
+
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
-	"path"
+	"github.com/mijia/sweb/log"
+	"golang.org/x/net/context"
 )
 
 const (
@@ -18,7 +19,7 @@ const (
 type NodeInfo map[string]interface{}
 
 // New create a new watcher which used to watch node info
-func New(s store.Store, ctx context.Context) (*watcher.Watcher, error) {
+func New(s store.Store, ctx context.Context) (watcher.Watcher, error) {
 	return watcher.New(s, ctx, KEY, convert, invertKey)
 }
 

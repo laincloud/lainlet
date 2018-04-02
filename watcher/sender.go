@@ -85,6 +85,9 @@ func (s *Sender) Broadcast(keys []string, action store.Action) {
 // Watch a key in sender, this will add a new receiver in sender;
 // the return channel will be closed when context was canceled.
 func (s *Sender) Watch(key string, ctx context.Context) <-chan *Event {
+	s.Lock()
+	defer s.Unlock()
+
 	log.Infof("A new receiver watching to %s", key)
 	r := &Receiver{
 		key:     key,
