@@ -27,7 +27,11 @@
 
 [[constraint]]
   name = "github.com/coreos/etcd"
-  version = "3.1.8"
+  version = "3.3.3"
+
+[[constraint]]
+  name = "github.com/coreos/go-semver"
+  version = "0.2.0"
 
 [[constraint]]
   branch = "master"
@@ -38,8 +42,20 @@
   version = "1.0.0"
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/mijia/adoc"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/mijia/sweb"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/net"
+
+[[constraint]]
   name = "google.golang.org/grpc"
-  version = "1.10.0"
+  version = "1.11.3"
 
 [prune]
   go-tests = true
