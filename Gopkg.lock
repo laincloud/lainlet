@@ -2,20 +2,22 @@
 
 
 [[projects]]
-  branch = "master"
   name = "github.com/codegangsta/inject"
   packages = ["."]
-  revision = "33e0aa1cb7c019ccc3fbe049a8262a6403d30504"
+  revision = "37d7f8432a3e684eef9b2edece76bdfa6ac85b39"
+  version = "v1.0-rc1"
 
 [[projects]]
   name = "github.com/coreos/etcd"
   packages = [
     "client",
     "pkg/pathutil",
-    "pkg/types"
+    "pkg/srv",
+    "pkg/types",
+    "version"
   ]
-  revision = "d267ca9c184e953554257d0acdd1dc9c47d38229"
-  version = "v3.1.8"
+  revision = "e348b1aedd9167360c466ae98f7343d3e22281f8"
+  version = "v3.3.3"
 
 [[projects]]
   name = "github.com/coreos/go-semver"
@@ -42,34 +44,21 @@
   version = "v1.0.0"
 
 [[projects]]
-  name = "github.com/laincloud/deployd"
-  packages = [
-    "cluster",
-    "engine",
-    "storage"
-  ]
-  revision = "a161c33d0da4ba1bc6648b9f19dc8d2ca4e1b312"
-
-[[projects]]
+  branch = "master"
   name = "github.com/mijia/adoc"
   packages = ["."]
-  revision = "b13894c1c54204ed818a345d2a5d7fc30f0c7239"
+  revision = "61dbc8d45a4512b5e1e5c1ff25773cee578418b9"
 
 [[projects]]
   branch = "master"
-  name = "github.com/mijia/go-generics"
-  packages = ["."]
-  revision = "2278a5f0de143e1d17ea16d56e7f85391bdb85a3"
-
-[[projects]]
   name = "github.com/mijia/sweb"
   packages = ["log"]
-  revision = "4919e73674ef98e133d7f5e1d87c3963653c12b1"
+  revision = "169a3affd5ea43b3aaaa81744a0b86ff89e2b3f3"
 
 [[projects]]
   name = "github.com/ugorji/go"
   packages = ["codec"]
-  revision = "ded73eae5db7e7a0ef6f55aace87a2873c5d2b74"
+  revision = "bdcc60b419d136a85cdf2e7cbcac34b3f1cd6e57"
 
 [[projects]]
   branch = "master"
@@ -83,7 +72,7 @@
     "lex/httplex",
     "trace"
   ]
-  revision = "d0aafc73d5cdc42264b0af071c261abac580695e"
+  revision = "61147c48b25b599e5b561d2e9c4f3e1ef489ca41"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -110,7 +99,7 @@
   branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
-  revision = "df60624c1e9b9d2973e889c7a1cff73155da81c4"
+  revision = "51d0944304c3cbce4afe9e5247e21100037bff78"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -139,12 +128,12 @@
     "tap",
     "transport"
   ]
-  revision = "8e4536a86ab602859c20df5ebfd0bd4228d08655"
-  version = "v1.10.0"
+  revision = "d11072e7ca9811b1100b80ca0269ac831f06d024"
+  version = "v1.11.3"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5fd17d05bcd5562dc3abdf7fa831547d2090a8d464f1cf5853769cd2ad9f5e01"
+  inputs-digest = "71148b02b410051dba6c58f5c974c07ef10f16441f4d62a9f7fcf841ee7ed61b"
   solver-name = "gps-cdcl"
   solver-version = 1

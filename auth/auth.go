@@ -6,9 +6,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/laincloud/deployd/engine"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
+	"github.com/laincloud/lainlet/spec"
 	"github.com/laincloud/lainlet/watcher/depends"
 	"github.com/mijia/sweb/log"
 	"golang.org/x/net/context"
@@ -185,7 +185,7 @@ func podgroupInvertKey(key string) string {
 func podgroupConvert(pairs []*store.KVPair) (map[string]interface{}, error) {
 	ret := make(map[string]interface{})
 	for _, kv := range pairs {
-		var pg engine.PodGroupWithSpec
+		var pg spec.PodGroupWithSpec
 		if err := json.Unmarshal(kv.Value, &pg); err != nil {
 			log.Errorf("Fail to unmarshal the dependency data: %s", string(kv.Value))
 			log.Errorf("JSON unmarshal error: %s", err.Error())

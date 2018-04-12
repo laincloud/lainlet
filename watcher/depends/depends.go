@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/laincloud/deployd/engine"
+	"github.com/laincloud/lainlet/spec"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
 	"github.com/mijia/sweb/log"
@@ -18,7 +18,7 @@ const (
 )
 
 // Depends represents the data type returned by this watcher. in fact, it's a type to represents map[nodename]map[appname]SharedPodWithSpec
-type Depends map[string]map[string]engine.SharedPodWithSpec
+type Depends map[string]map[string]spec.SharedPodWithSpec
 
 // New create a new watcher which used to watch depends data
 func New(s store.Store, ctx context.Context) (watcher.Watcher, error) {

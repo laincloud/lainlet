@@ -3,11 +3,12 @@ package podgroup
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mijia/sweb/log"
-	"golang.org/x/net/context"
-	"github.com/laincloud/deployd/engine"
+
+	"github.com/laincloud/lainlet/spec"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
+	"github.com/mijia/sweb/log"
+	"golang.org/x/net/context"
 	"path"
 )
 
@@ -17,7 +18,7 @@ const (
 )
 
 // PodGroup represents the data type stored in backend for each pod. watcher will return data whose type is map[string]PodGroup.
-type PodGroup engine.PodGroupWithSpec
+type PodGroup spec.PodGroupWithSpec
 
 // New create a new watcher which used to watch podgroup data
 func New(s store.Store, ctx context.Context) (watcher.Watcher, error) {

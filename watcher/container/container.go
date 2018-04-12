@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/laincloud/deployd/engine"
+	"github.com/laincloud/lainlet/spec"
 	"github.com/laincloud/lainlet/store"
 	"github.com/laincloud/lainlet/watcher"
 	"github.com/mijia/sweb/log"
@@ -18,7 +18,7 @@ const (
 )
 
 // PodGroup is actually from the deployd engine, it actually engine.PodGroupWithSpec
-type PodGroup engine.PodGroupWithSpec
+type PodGroup spec.PodGroupWithSpec
 
 // Info represents the container info, the data type returned by this container watcher
 type Info struct {
@@ -40,7 +40,7 @@ type ContainerWatcher struct {
 // New create a new watcher which used to watch container info
 func New(s store.Store, ctx context.Context) (watcher.Watcher, error) {
 	ret := &ContainerWatcher{
-		invertsTable:make(map[string]string),
+		invertsTable: make(map[string]string),
 	}
 	base, err := watcher.New(s, ctx, KEY, ret.convert, ret.invertKey)
 	if err != nil {
