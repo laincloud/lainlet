@@ -7,13 +7,12 @@ import (
 	"reflect"
 	"strings"
 
+	"errors"
 	"github.com/laincloud/lainlet/api"
 	"github.com/laincloud/lainlet/auth"
 	"github.com/laincloud/lainlet/watcher"
 	"github.com/laincloud/lainlet/watcher/podgroup"
-	"errors"
 )
-
 
 var tooManyDeadContainersError = errors.New("over half of the containers lost their IPs")
 
@@ -62,7 +61,7 @@ func (wi *WebrouterInfo) Make(data map[string]interface{}) (api.API, bool, error
 		pg := item.(podgroup.PodGroup)
 		parts := strings.Split(pg.Spec.Name, ".")
 		// Webrouter only cares about web procs
-		if len(parts) < 3 || parts[len(parts)-2] != "web" {
+		if len(parts) < 3 || (parts[len(parts)-2] != "web" && parts[len(parts)-2] != "canary") {
 			continue
 		}
 		ci := CoreInfoForWebrouter{
@@ -74,7 +73,7 @@ func (wi *WebrouterInfo) Make(data map[string]interface{}) (api.API, bool, error
 				Annotation: pg.Spec.Pod.Annotation,
 				Containers: make([]ContainerForWebrouter, len(pod.Containers)),
 			}
-			if (len(pod.Containers) > 0 && len(pod.Containers[0].ContainerIp) > 0) {
+			if len(pod.Containers) > 0 && len(pod.Containers[0].ContainerIp) > 0 {
 				aliveCount++
 			}
 			for j, container := range pod.Containers {
@@ -86,7 +85,7 @@ func (wi *WebrouterInfo) Make(data map[string]interface{}) (api.API, bool, error
 		}
 		ret.Data[pg.Spec.Name] = ci
 	}
-	if containerCount == 0 || aliveCount * 2 < containerCount {
+	if containerCount == 0 || aliveCount*2 < containerCount {
 		return ret, false, tooManyDeadContainersError
 	}
 	return ret, !reflect.DeepEqual(wi.Data, ret.Data), nil
